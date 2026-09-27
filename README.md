@@ -30,6 +30,8 @@ The tests inspect the built output, so run the build before `npm test`. Tests us
 - A portrait-led homepage with larger research-focus labels and five experience cards in a horizontal row. Smaller screens can scroll the card strip without scrolling the whole page sideways.
 - The Experience page keeps every logo on the left and its corresponding text on the right; mobile rows stack logo above text.
 - Separate April 2026 CVPR acceptance news for RAR and RobustVisRAG, each linked to its own project.
+- Home's selected-research carousel contains UniRestore, PDAF, APGCC, RAR, and RobustVisRAG, in that order. Desktop shows three cards, tablet two, and mobile one; each arrow click advances exactly one card, with boundary states and a visible range indicator.
+- Home thumbnails reuse the Publications teasers, including the RobustVisRAG Retrieve / Generation pair. Videos autoplay only while visible and pause when horizontally scrolled out of view.
 - Five selected research stories with capability teasers on the left and explanations on the right.
 - Linear illustrated stories on mobile, short screens, or without JavaScript. Desktop scroll switching remains available when the device requests reduced motion; CSS transitions and smooth scrolling are disabled for that preference.
 - A 13-paper index with real project thumbnails, multiple research tags per paper, year / research-area filters, counts, reset, and an empty state.
@@ -42,6 +44,12 @@ The tests inspect the built output, so run the build before `npm test`. Tests us
 - Project-base-aware URLs, a custom 404 page, no external fonts, and no tracking.
 
 The abstract concept illustrations have been replaced with actual project material. Full-size figure and source links are available in the research stories. This version does not include a live model-inference service; a `demo` URL can be added when a real hosted demo is available.
+
+### Home carousel navigation
+
+The carousel uses native horizontal scrolling and CSS scroll snap, not automatic slide rotation. Its arrows keep a pending target during smooth scrolling so repeated clicks advance one card per click instead of jumping an entire viewport. The left/right arrow keys work when the carousel region itself is focused, without intercepting native video controls. Reduced-motion preference makes card navigation instant.
+
+Touch/trackpad scrolling, focus navigation, and resizing update the range and boundary buttons. Without JavaScript, all five cards and static media remain accessible in the horizontally scrollable region; nonfunctional buttons stay hidden. Thumbnail videos are not wrapped in links, so their native controls remain usable. Project titles and resource links provide navigation.
 
 ## Research categories
 
@@ -103,6 +111,7 @@ At the owner's request, research demonstration videos autoplay independently of 
 | [ProjectImage.astro](src/components/ProjectImage.astro) | Optimized project figures and thumbnails |
 | [ExperienceTimeline.astro](src/components/ExperienceTimeline.astro) | Full Experience rows, consistently logo-left and text-right |
 | [ExperienceSummary.astro](src/components/ExperienceSummary.astro) | Horizontal Home cards linking to full Experience entries |
+| [ResearchCarousel.astro](src/components/ResearchCarousel.astro) | Five animated Home cards, single-card navigation, and responsive range controls |
 | [TeaserMedia.astro](src/components/TeaserMedia.astro) | Viewport-aware autoplay, native controls, and user-pause preservation |
 | [teasers.ts](src/data/teasers.ts) | Teaser posters, clips, captions, and source links |
 | [ResearchTopics.astro](src/components/ResearchTopics.astro) | Shared multi-category tags for cards, stories, and the publication index |
@@ -113,7 +122,7 @@ At the owner's request, research demonstration videos autoplay independently of 
 
 Use a YouTube **video ID**, not an embed URL, in `video`. Paper years and award dates should retain their actual precision. Optional links should be omitted rather than filled with `#`.
 
-When replacing media, update both the local asset and its source record. The 26 tests cover routes, images, category membership, stable controls, news, experience links, teaser budgets, and deployment configuration. Playback tests execute the component's real client script with controlled media events to verify autoplay, automatic versus user pauses, autoplay denial, and media-error fallback. Browser checks additionally verify desktop scroll switching and autoplay with both reduced and normal motion settings, native pause/resume, and post-presentation scrolling.
+When replacing media, update both the local asset and its source record. The 32 tests cover routes, images, category membership, stable controls, news, experience links, teaser budgets, deployment configuration, and single-card carousel movement (including rapid clicks, native scrolling, resize, keyboard controls, and reduced motion). Playback tests execute the component's real client script with controlled media events to verify autoplay, automatic versus user pauses, autoplay denial, and media-error fallback. Browser checks additionally verify desktop scroll switching and autoplay with both reduced and normal motion settings, native pause/resume, and post-presentation scrolling.
 
 ## Publish to GitHub Pages
 

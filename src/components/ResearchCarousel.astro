@@ -1,0 +1,110 @@
+---
+import Icon from './Icon.astro';
+import TeaserMedia from './TeaserMedia.astro';
+import ResourceLinks from './ResourceLinks.astro';
+import ResearchTopics from './ResearchTopics.astro';
+import { homeResearch } from '../data/research';
+import { sitePath } from '../utils/paths';
+---
+<section class="research-band" aria-labelledby="selected-title">
+  <div class="container">
+    <div class="section-heading research-carousel-heading">
+      <div><p class="eyebrow">SELECTED RESEARCH</p><h2 id="selected-title">From questions to <em>contributions.</em></h2></div>
+      <div class="research-carousel-actions">
+        <a class="text-link" href={sitePath('publications/')}>All publications <Icon /></a>
+        <div class="research-carousel-controls" hidden>
+          <button class="carousel-arrow carousel-previous" type="button" aria-label="Previous research project" aria-controls="research-carousel-track" disabled><Icon /></button>
+          <span class="carousel-status" id="research-carousel-status" role="status" aria-live="polite" aria-atomic="true"></span>
+          <button class="carousel-arrow carousel-next" type="button" aria-label="Next research project" aria-controls="research-carousel-track"><Icon /></button>
+        </div>
+      </div>
+    </div>
+    <div class="research-cards" id="research-carousel-track" role="region" aria-roledescription="carousel" aria-label="Selected research projects" tabindex="0">
+      {homeResearch.map((p, i) => (
+        <article class="research-card" data-project-id={p.id} role="group" aria-label={`${i + 1} of ${homeResearch.length}: ${p.name}`}>
+          <div class="card-media"><TeaserMedia teaser={p.teaser} fallback={p.image} compact /></div>
+          <div class="research-card-body">
+            <div class="card-meta"><span>{p.venue} {p.year}</span>{p.highlight && <span class="highlight">✳ {p.highlight}</span>}</div>
+            <h3><a href={sitePath(`publications/#${p.id}`)}>{p.name}</a></h3>
+            <p>{p.feature.headline}</p>
+            <ResearchTopics topics={p.topics} compact />
+            <ResourceLinks publication={p} compact />
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="carousel-hint">Swipe or scroll to explore all five projects. Arrow buttons move one project at a time.</p>
+  </div>
+</section>
+<script>
+  const track = document.querySelector<HTMLElement>('#research-carousel-track');
+  const controls = document.querySelector<HTMLElement>('.research-carousel-controls');
+  const previous = document.querySelector<HTMLButtonElement>('.carousel-previous');
+  const next = document.querySelector<HTMLButtonElement>('.carousel-next');
+  const status = document.querySelector<HTMLElement>('#research-carousel-status');
+  if (track && controls && previous && next && status) {
+    const cards = [...track.querySelectorAll<HTMLElement>('.research-card')];
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let index = 0;
+    let pending: number | null = null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let lastWidth = 0;
+    const geometry = () => {
+      const width = cards[0].getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(track).columnGap);
+      const step = width + gap;
+      const visible = Math.max(1, Math.round((track.clientWidth + gap) / step));
+      return { step, visible, maxIndex: Math.max(0, cards.length - visible) };
+    };
+    const render = () => {
+      const { visible, maxIndex } = geometry();
+      previous.disabled = index === 0;
+      next.disabled = index === maxIndex;
+      status.textContent = `${index + 1}\u2013${Math.min(index + visible, cards.length)} / ${cards.length}`;
+    };
+    const settle = () => {
+      clearTimeout(timer);
+      const { step, maxIndex } = geometry();
+      index = Math.max(0, Math.min(maxIndex, Math.round(track.scrollLeft / step)));
+      pending = null;
+      render();
+    };
+    const move = (direction: number) => {
+      const { step, maxIndex } = geometry();
+      const current = pending ?? Math.round(track.scrollLeft / step);
+      index = Math.max(0, Math.min(maxIndex, current + direction));
+      // Keep the intended index during smooth scrolling so rapid clicks remain one-card steps.
+      pending = index;
+      track.scrollTo({ left: index * step, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+      render();
+      clearTimeout(timer);
+      timer = setTimeout(settle, 180);
+    };
+    previous.addEventListener('click', () => move(-1));
+    next.addEventListener('click', () => move(1));
+    track.addEventListener('scroll', () => {
+      clearTimeout(timer);
+      timer = setTimeout(settle, 180);
+    }, { passive: true });
+    track.addEventListener('scrollend', settle);
+    const interrupt = () => { pending = null; };
+    track.addEventListener('pointerdown', interrupt, { passive: true });
+    track.addEventListener('wheel', interrupt, { passive: true });
+    track.addEventListener('keydown', (event) => {
+      if (event.target !== track || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      move(event.key === 'ArrowRight' ? 1 : -1);
+    });
+    new ResizeObserver(() => {
+      if (track.clientWidth === lastWidth) return;
+      lastWidth = track.clientWidth;
+      const { step, maxIndex } = geometry();
+      index = Math.min(index, maxIndex);
+      pending = null;
+      track.scrollTo({ left: index * step, behavior: 'instant' });
+      render();
+    }).observe(track);
+    controls.hidden = false;
+    render();
+  }
+</script>

@@ -2,8 +2,8 @@
 import ProjectImage from './ProjectImage.astro';
 import type { SiteImage } from '../data/media';
 import type { Teaser } from '../data/teasers';
-interface Props { teaser?: Teaser; fallback: SiteImage }
-const { teaser, fallback } = Astro.props;
+interface Props { teaser?: Teaser; fallback: SiteImage; compact?: boolean }
+const { teaser, fallback, compact = false } = Astro.props;
 const poster = teaser?.poster ?? fallback;
 ---
 <div class="teaser-media">
@@ -22,7 +22,7 @@ const poster = teaser?.poster ?? fallback;
       {teaser?.video && <video class="teaser-video" data-teaser-video data-src={teaser.video} poster={poster.src.src} width={poster.src.width} height={poster.src.height} aria-label={teaser.caption} controls muted loop playsinline preload="none" hidden />}
     </div>
   )}
-  {teaser && !teaser.figures && <p class="teaser-caption">{teaser.caption}</p>}
+  {teaser && !teaser.figures && !compact && <p class="teaser-caption">{teaser.caption}</p>}
   {teaser?.video && <p class="teaser-error" data-teaser-error role="status" hidden>The animated preview could not play. The static preview is shown; use the source link or watch the presentation.</p>}
 </div>
 <script>

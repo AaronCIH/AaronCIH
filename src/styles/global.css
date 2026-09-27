@@ -112,14 +112,27 @@ em { font-family: inherit; color: var(--blue); font-weight: inherit; }
 .research-card-body > .research-topics { min-height: 44px; align-content: start; }
 .research-chapter > .research-topics { margin: 0 0 14px; }
 .research-band { background: var(--tint); border-block: 1px solid #e7eef7; padding-block: 78px; }
-.research-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-.research-card { background: white; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; transition: transform .25s, box-shadow .25s; }
-.research-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px #19345d12; }
-.card-art { display: flex; position: relative; align-items: center; justify-content: center; aspect-ratio: 4 / 3; padding: 14px; background: white; border-bottom: 1px solid var(--line); }
+.research-carousel-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.research-carousel-controls { display: flex; align-items: center; gap: 12px; }
+.carousel-arrow { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #b7cce8; border-radius: 50%; background: white; color: var(--blue); box-shadow: 0 3px 10px #163c6910; transition: color .2s, background .2s, border-color .2s; }
+.carousel-arrow:hover:not(:disabled) { background: var(--navy); color: white; border-color: var(--navy); }
+.carousel-arrow:disabled { opacity: .38; cursor: default; box-shadow: none; }
+.carousel-previous svg { transform: rotate(180deg); }
+.carousel-status { font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); min-width: 55px; text-align: center; }
+.carousel-hint { font-size: 11px; color: var(--muted); margin-top: 12px; }
+.research-cards { --cards-per-view: 3; --card-gap: 25px; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - (var(--cards-per-view) - 1) * var(--card-gap)) / var(--cards-per-view)); gap: var(--card-gap); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #bdcfe7 transparent; padding-block: 5px 15px; }
+.research-card { min-width: 0; scroll-snap-align: start; background: white; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: border-color .25s; }
+.research-card:hover { border-color: #a3bddf; }
+.card-media { padding: 14px; background: white; border-bottom: 1px solid var(--line); }
+.card-media .teaser-viewport { height: 210px; }
+.card-media .teaser-gallery { height: 210px; grid-template-rows: 1fr 1fr; gap: 10px; }
+.card-media .teaser-result { min-height: 0; display: flex; flex-direction: column; }
+.card-media .teaser-result > figcaption { font-size: 10px; margin-bottom: 4px; }
+.card-media .teaser-gallery .project-image-stage { height: 0; min-height: 0; flex: 1; }
 .project-image { display: block; object-fit: contain; width: 100%; height: auto; }
 .project-image-card { height: 100%; max-height: 250px; }
-.art-open { position: absolute; bottom: 11px; right: 11px; display: grid; place-items: center; width: 30px; height: 30px; background: var(--navy); color: white; border-radius: 3px; }
-.research-card-body { padding: 23px; }
+.research-card-body { padding: 23px; display: flex; flex-direction: column; flex: 1; }
+.research-card-body .resource-links { margin-top: auto; padding-top: 12px; }
 .card-meta { display: flex; align-items: center; gap: 10px; font-size: 10px; color: var(--blue); font-weight: 600; min-height: 22px; }
 .highlight { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; font-size: 9px; background: var(--pale-blue); color: #21569c; border-radius: 3px; }
 .research-card h3 { font-size: 25px; margin-top: 12px; }
@@ -326,7 +339,7 @@ dialog::backdrop { background: #071b3cd9; backdrop-filter: blur(7px); }
   .journey-scroll-hint { display: block; }
   .affiliation-strip > div { font-size: 11px; gap: 20px; }
   .journey-row { gap: 60px; }
-  .research-cards { gap: 20px; }
+  .research-cards { --card-gap: 20px; }
   .research-card-body { padding: 19px; }
   .news-grid { gap: 45px; }
   .scroll-enhanced.showcase-grid { gap: 36px; }
@@ -343,6 +356,7 @@ dialog::backdrop { background: #071b3cd9; backdrop-filter: blur(7px); }
   .cv-paper { padding: 34px; }
 }
 @media (max-width: 959px) {
+  .research-cards { --cards-per-view: 2; }
   .hero { gap: 38px; }
   .hero h1 { font-size: 48px; }
   .hero-topics { font-size: 13px; }
@@ -421,8 +435,11 @@ dialog::backdrop { background: #071b3cd9; backdrop-filter: blur(7px); }
   .journey-description { font-size: 12px; margin-top: 10px; }
   .date-pill { font-size: 9px; }
   .research-band { padding-block: 54px; }
-  .research-cards { grid-template-columns: 1fr; gap: 23px; }
-  .card-art { max-height: 290px; aspect-ratio: 4 / 3; }
+  .research-cards { --cards-per-view: 1; --card-gap: 18px; }
+  .research-carousel-heading { flex-direction: column; }
+  .research-carousel-actions { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; gap: 12px; }
+  .research-carousel-actions > .text-link { font-size: 11px; gap: 6px; }
+  .research-carousel-controls { gap: 8px; }
   .project-image-card { max-height: 260px; }
   .research-card-body { padding: 22px; }
   .research-card h3 { font-size: 26px; }

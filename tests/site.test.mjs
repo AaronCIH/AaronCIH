@@ -187,13 +187,40 @@ test('every publication exposes non-empty, unique tags from the new research are
 });
 
 test('home research cards show the same multiple categories as the publication index', () => {
-  const cards = [...pages.get('').matchAll(/<article class="research-card">[\s\S]*?<\/article>/g)].map(match => match[0]);
+  const cards = [...pages.get('').matchAll(/<article class="research-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]);
   const tags = cards.map(card => [...card.matchAll(/\sdata-topic="([^"]+)"/g)].map(match => match[1]));
   assert.deepEqual(tags, [
     ['Image Generation and Editing', 'Multimodal Learning', 'Visual Understanding'],
     ['Domain Generalization', 'Visual Understanding'],
     ['Visual Understanding'],
+    ['Image Generation and Editing', 'Multimodal Learning'],
+    ['Multimodal Learning', 'Visual Understanding'],
   ]);
+});
+
+test('Home carousel contains all five projects in the preserved order with shared teaser media', () => {
+  const home = pages.get('');
+  const cards = [...home.matchAll(/<article class="research-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]);
+  assert.deepEqual(cards.map(card => card.match(/data-project-id="([^"]+)"/)[1]), [
+    'unirestore', 'pdaf', 'apgcc', 'restore-assess-repeat', 'robustvisrag',
+  ]);
+  for (const [index, card] of cards.entries()) {
+    assert.ok(card.includes(`aria-label="${index + 1} of 5:`));
+    assert.match(card, /class="teaser-media"/);
+    if (index < 4) {
+      assert.match(card, /<video\b[^>]*controls muted loop playsinline preload="none" hidden/);
+      assert.doesNotMatch(card, /<a\b[^>]*>[^<]*<video/);
+    } else {
+      assert.match(card, /<figcaption>Retrieve<\/figcaption>/);
+      assert.match(card, /<figcaption>Generation<\/figcaption>/);
+    }
+  }
+  assert.match(home, /id="research-carousel-track" role="region" aria-roledescription="carousel"/);
+  for (const direction of ['Previous', 'Next']) {
+    assert.match(home, new RegExp(`aria-label="${direction} research project" aria-controls="research-carousel-track"`));
+  }
+  assert.match(home, /class="research-carousel-controls" hidden/);
+  assert.match(home, /id="research-carousel-status" role="status" aria-live="polite"/);
 });
 
 test('sticky preview controls stay outside changing panels so restored focus cannot freeze scrolling', () => {

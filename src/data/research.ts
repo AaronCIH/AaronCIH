@@ -167,5 +167,10 @@ export const publications: Publication[] = [
 export const featured = publications.filter(
   (publication): publication is Publication & { feature: NonNullable<Publication['feature']> } => Boolean(publication.feature),
 );
-export const homeResearch = featured.filter(({ id }) => ['unirestore', 'pdaf', 'apgcc'].includes(id));
+const homeOrder = ['unirestore', 'pdaf', 'apgcc', 'restore-assess-repeat', 'robustvisrag'];
+export const homeResearch = homeOrder.map((id) => {
+  const publication = featured.find((item) => item.id === id);
+  if (!publication) throw new Error(`Home research project is missing: ${id}`);
+  return publication;
+});
 export const videoUrl = (id: string) => `https://www.youtube.com/watch?v=${id}`;
