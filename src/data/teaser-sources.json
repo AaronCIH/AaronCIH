@@ -39,6 +39,12 @@
       "url": "https://robustvisrag.github.io/robustvisrag_files/ret/ret_sample2_.png",
       "page": "https://robustvisrag.github.io/",
       "animated": false
+    },
+    {
+      "id": "robustvisrag-generation",
+      "url": "https://robustvisrag.github.io/robustvisrag_files/gen/gen_sample2_.png",
+      "page": "https://robustvisrag.github.io/",
+      "animated": false
     }
   ]
 }

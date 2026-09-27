@@ -7,11 +7,22 @@ const { teaser, fallback } = Astro.props;
 const poster = teaser?.poster ?? fallback;
 ---
 <div class="teaser-media">
-  <div class="teaser-viewport">
-    <div data-teaser-poster><ProjectImage image={poster} /></div>
-    {teaser?.video && <video class="teaser-video" data-teaser-video data-src={teaser.video} poster={poster.src.src} width={poster.src.width} height={poster.src.height} aria-label={teaser.caption} controls muted loop playsinline preload="none" hidden />}
-  </div>
-  {teaser && <p class="teaser-caption">{teaser.caption}</p>}
+  {teaser?.figures ? (
+    <div class="teaser-gallery">
+      {teaser.figures.map((figure) => (
+        <figure class="teaser-result">
+          <figcaption>{figure.label}</figcaption>
+          <ProjectImage image={figure.image} />
+        </figure>
+      ))}
+    </div>
+  ) : (
+    <div class="teaser-viewport">
+      <div data-teaser-poster><ProjectImage image={poster} /></div>
+      {teaser?.video && <video class="teaser-video" data-teaser-video data-src={teaser.video} poster={poster.src.src} width={poster.src.width} height={poster.src.height} aria-label={teaser.caption} controls muted loop playsinline preload="none" hidden />}
+    </div>
+  )}
+  {teaser && !teaser.figures && <p class="teaser-caption">{teaser.caption}</p>}
   {teaser?.video && <p class="teaser-error" data-teaser-error role="status" hidden>The animated preview could not play. The static preview is shown; use the source link or watch the presentation.</p>}
 </div>
 <script>

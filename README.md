@@ -85,7 +85,7 @@ The selected-research preview uses result demonstrations rather than architectur
 - **UniRestore:** the [provided teaser GIF](https://github.com/unirestore/UniRestore/blob/main/assets/teaser.gif).
 - **PDAF:** a baseline-versus-PDAF segmentation animation from its project page.
 - **APGCC:** an animated crowd-localization example from its project page.
-- **RobustVisRAG:** a document-retrieval comparison figure from its project page.
+- **RobustVisRAG:** two stacked result figures from its project page, labeled **Retrieve** and **Generation**, in both the sticky desktop preview and inline mobile stories.
 
 [teaser-sources.json](src/data/teaser-sources.json) records provenance, durations, and poster timestamps. The original GIFs total over 42 MB; their four silent H.264 MP4 conversions total under 1.8 MB. FFmpeg converts them at 15 fps, at most 960 px wide, with CRF 24, `yuv420p`, no audio, and fast-start metadata. Full animation durations are preserved. Representative WebP posters provide a readable static alternative.
 
@@ -113,7 +113,7 @@ At the owner's request, research demonstration videos autoplay independently of 
 
 Use a YouTube **video ID**, not an embed URL, in `video`. Paper years and award dates should retain their actual precision. Optional links should be omitted rather than filled with `#`.
 
-When replacing media, update both the local asset and its source record. The 25 tests cover routes, images, category membership, stable controls, news, experience links, teaser budgets, and deployment configuration. Playback tests execute the component's real client script with controlled media events to verify autoplay, automatic versus user pauses, autoplay denial, and media-error fallback. Browser checks additionally verify desktop scroll switching and autoplay with both reduced and normal motion settings, native pause/resume, and post-presentation scrolling.
+When replacing media, update both the local asset and its source record. The 26 tests cover routes, images, category membership, stable controls, news, experience links, teaser budgets, and deployment configuration. Playback tests execute the component's real client script with controlled media events to verify autoplay, automatic versus user pauses, autoplay denial, and media-error fallback. Browser checks additionally verify desktop scroll switching and autoplay with both reduced and normal motion settings, native pause/resume, and post-presentation scrolling.
 
 ## Publish to GitHub Pages
 

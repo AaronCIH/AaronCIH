@@ -10,11 +10,18 @@ import pdafVideo from '../assets/teasers/pdaf.mp4';
 import apgccPoster from '../assets/teasers/apgcc.webp';
 import apgccVideo from '../assets/teasers/apgcc.mp4';
 import ragPoster from '../assets/teasers/robustvisrag.webp';
+import ragGeneration from '../assets/teasers/robustvisrag-generation.webp';
+
+interface TeaserFigure {
+  label: string;
+  image: SiteImage;
+}
 
 export interface Teaser {
   poster: SiteImage;
   caption: string;
   video?: string;
+  figures?: [TeaserFigure, ...TeaserFigure[]];
 }
 
 function teaser(id: string, src: ImageMetadata, caption: string, video?: string): Teaser {
@@ -23,10 +30,20 @@ function teaser(id: string, src: ImageMetadata, caption: string, video?: string)
   return { poster: { src, alt: caption, sourcePage: source.page }, caption, video };
 }
 
+const retrieval = teaser('robustvisrag', ragPoster, 'Retrieving the relevant visual document despite degraded image quality.');
+const generation = teaser('robustvisrag-generation', ragGeneration, 'Comparing generated answers to a question about a degraded retrieved document.');
+
 export const teasers = {
   rar: teaser('rar', rarPoster, 'Iterative quality assessment and restoration: recovering detail from a degraded image.', rarVideo),
   unirestore: teaser('unirestore', unirestorePoster, 'Image restoration for human perception and downstream vision tasks.', unirestoreVideo),
   pdaf: teaser('pdaf', pdafPoster, 'A visual comparison of baseline and PDAF semantic segmentation predictions.', pdafVideo),
   apgcc: teaser('apgcc', apgccPoster, 'Crowd counting and localization with point detections in a real scene.', apgccVideo),
-  rag: teaser('robustvisrag', ragPoster, 'Retrieving the relevant visual document despite degraded image quality.'),
-};
+  rag: {
+    ...retrieval,
+    caption: 'Retrieval and answer generation from degraded visual documents.',
+    figures: [
+      { label: 'Retrieve', image: retrieval.poster },
+      { label: 'Generation', image: generation.poster },
+    ],
+  },
+} satisfies Record<string, Teaser>;

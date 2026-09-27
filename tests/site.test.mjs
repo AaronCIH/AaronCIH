@@ -233,9 +233,9 @@ test('Home uses a five-card summary linked to full Experience entries', () => {
   }
 });
 
-test('all five capability teasers are local and source GIF conversions stay under the media budget', () => {
+test('all capability teaser assets are local and source GIF conversions stay under the media budget', () => {
   const { sources } = JSON.parse(readFileSync(join(root, 'src', 'data', 'teaser-sources.json'), 'utf8'));
-  assert.equal(sources.length, 5);
+  assert.equal(sources.length, 6);
   assert.equal(sources.filter(source => source.animated).length, 4);
   assert.equal(sources.find(source => source.id === 'rar').page, 'https://github.com/saic-fi/RAR/blob/main/assets/teaser.gif');
   assert.equal(sources.find(source => source.id === 'unirestore').page, 'https://github.com/unirestore/UniRestore/blob/main/assets/teaser.gif');
@@ -251,6 +251,25 @@ test('all five capability teasers are local and source GIF conversions stay unde
     total += video.length;
   }
   assert.ok(total < 2_000_000, 'Combined animated previews exceed 2 MB');
+});
+
+test('RobustVisRAG shows both labeled results in sticky and inline previews', () => {
+  const html = pages.get('publications');
+  const galleries = [...html.matchAll(/<div class="teaser-gallery">[\s\S]*?<\/div>/g)].map(match => match[0]);
+  assert.equal(galleries.length, 2);
+  for (const gallery of galleries) {
+    const labels = [...gallery.matchAll(/<figcaption>([^<]+)<\/figcaption>/g)].map(match => match[1]);
+    assert.deepEqual(labels, ['Retrieve', 'Generation']);
+    assert.equal((gallery.match(/<img\b/g) ?? []).length, 2);
+    assert.match(gallery, /robustvisrag\./);
+    assert.match(gallery, /robustvisrag-generation\./);
+    assert.match(gallery, /alt="Retrieving the relevant visual document/);
+    assert.match(gallery, /alt="Comparing generated answers/);
+  }
+  const { sources } = JSON.parse(readFileSync(join(root, 'src', 'data', 'teaser-sources.json'), 'utf8'));
+  const generation = sources.find(source => source.id === 'robustvisrag-generation');
+  assert.equal(generation.url, 'https://robustvisrag.github.io/robustvisrag_files/gen/gen_sample2_.png');
+  assert.equal(generation.animated, false);
 });
 
 test('teasers start with accessible posters and no unconditional video downloads', () => {
@@ -272,7 +291,7 @@ test('teasers start with accessible posters and no unconditional video downloads
   }
   assert.doesNotMatch(html, /data-(?:teaser|motion)-toggle/);
   assert.match(html, /Previews play silently while visible/);
-  assert.equal((html.match(/class="teaser-caption"/g) ?? []).length, 10);
+  assert.equal((html.match(/class="teaser-caption"/g) ?? []).length, 8);
 });
 
 test('desktop scroll switching is independent of reduced-motion preference', () => {

@@ -169,6 +169,10 @@ details[open] > summary svg { transform: rotate(45deg); }
 .teaser-viewport > [data-teaser-poster], .teaser-viewport .project-image-stage { height: 100%; }
 .teaser-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: white; }
 .teaser-caption { color: var(--muted); font-size: 11px; line-height: 1.7; margin-top: 12px; }
+.teaser-gallery { display: grid; gap: 14px; }
+.teaser-result > figcaption { color: var(--blue); font-size: 12px; font-weight: 600; margin-bottom: 7px; }
+.teaser-gallery .project-image-stage { height: auto; }
+.sticky-stage .teaser-gallery .project-image-stage { height: clamp(85px, calc((100vh - 490px) / 2), 170px); }
 .teaser-error { color: #8b302c; background: #fff1ef; border: 1px solid #edc5c1; padding: 9px; margin-top: 10px; font-size: 11px; }
 .research-chapter { position: relative; border-bottom: 1px solid var(--line); padding: 48px 0; scroll-margin-top: 100px; }
 .research-chapter:last-child { border-bottom: 0; }
