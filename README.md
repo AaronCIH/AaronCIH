@@ -31,13 +31,13 @@ The tests inspect the built output, so run the build before `npm test`. Tests us
 - The Experience page keeps every logo on the left and its corresponding text on the right; mobile rows stack logo above text.
 - Separate April 2026 CVPR acceptance news for RAR and RobustVisRAG, each linked to its own project.
 - Five selected research stories with capability teasers on the left and explanations on the right.
-- Linear illustrated stories on mobile, short screens, reduced-motion devices, or without JavaScript.
+- Linear illustrated stories on mobile, short screens, or without JavaScript. Desktop scroll switching remains available when the device requests reduced motion; CSS transitions and smooth scrolling are disabled for that preference.
 - A 13-paper index with real project thumbnails, multiple research tags per paper, year / research-area filters, counts, reset, and an empty state.
 - Research details, Paper / Project / Code links, and video playback in an accessible native dialog.
 - The supplied UniRestore, PDAF, and APGCC videos, plus RAR and RobustVisRAG.
 - YouTube players load only after a click, with an external playback alternative; closing a dialog removes the player and restores focus.
 - Sticky figure/video/source controls remain mounted outside the changing figure panels. Their targets follow the selected project without moving keyboard focus or freezing scrolling after a video closes.
-- Teaser animations play silently only while visible, with shared play/pause controls. Reduced-motion users see static posters unless they explicitly opt in.
+- Teaser animations play silently only while visible, without an extra start button. Native video controls allow pause/resume; a manual pause is preserved when leaving and returning to the project.
 - Home news archive, experience timeline, education cards, awards, and a printable HTML CV.
 - Project-base-aware URLs, a custom 404 page, no external fonts, and no tracking.
 
@@ -89,7 +89,9 @@ The selected-research preview uses result demonstrations rather than architectur
 
 [teaser-sources.json](src/data/teaser-sources.json) records provenance, durations, and poster timestamps. The original GIFs total over 42 MB; their four silent H.264 MP4 conversions total under 1.8 MB. FFmpeg converts them at 15 fps, at most 960 px wide, with CRF 24, `yuv420p`, no audio, and fast-start metadata. Full animation durations are preserved. Representative WebP posters provide a readable static alternative.
 
-The converted files are committed in [teaser assets](src/assets/teasers); neither FFmpeg nor downloads from the original sites are needed to build or deploy. Videos have no initial `src` and use `preload="none"`. They pause offscreen, in background tabs, and while a full presentation dialog is open. Playback failures show an explicit message and a static poster; switching animations back on retries failed previews. “View full figure” still opens the original research figure, while “Source” points to the teaser source.
+The converted files are committed in [teaser assets](src/assets/teasers); neither FFmpeg nor downloads from the original sites are needed to build or deploy. Videos have no initial `src` and use `preload="none"`. They start muted when visible and pause offscreen, in background tabs, and while a full presentation dialog is open. A visitor's native-control pause is not overridden when visibility changes.
+
+At the owner's request, research demonstration videos autoplay independently of the device's reduced-motion preference; this preference still suppresses decorative CSS transitions and smooth scrolling. Native controls provide an immediate way to pause motion. Browsers may block autoplay despite muting: in that case the player stays available with an explicit explanation and can be started manually. Actual media errors show a static poster and a separate error message. “View full figure” still opens the original research figure, while “Source” points to the teaser source.
 
 ## Updating content
 
@@ -101,7 +103,7 @@ The converted files are committed in [teaser assets](src/assets/teasers); neithe
 | [ProjectImage.astro](src/components/ProjectImage.astro) | Optimized project figures and thumbnails |
 | [ExperienceTimeline.astro](src/components/ExperienceTimeline.astro) | Full Experience rows, consistently logo-left and text-right |
 | [ExperienceSummary.astro](src/components/ExperienceSummary.astro) | Horizontal Home cards linking to full Experience entries |
-| [TeaserMedia.astro](src/components/TeaserMedia.astro) | Viewport-aware, reduced-motion-safe capability previews |
+| [TeaserMedia.astro](src/components/TeaserMedia.astro) | Viewport-aware autoplay, native controls, and user-pause preservation |
 | [teasers.ts](src/data/teasers.ts) | Teaser posters, clips, captions, and source links |
 | [ResearchTopics.astro](src/components/ResearchTopics.astro) | Shared multi-category tags for cards, stories, and the publication index |
 | [ResourceLinks.astro](src/components/ResourceLinks.astro) | Optional resource buttons; absent links are omitted |
@@ -111,7 +113,7 @@ The converted files are committed in [teaser assets](src/assets/teasers); neithe
 
 Use a YouTube **video ID**, not an embed URL, in `video`. Paper years and award dates should retain their actual precision. Optional links should be omitted rather than filled with `#`.
 
-When replacing media, update both the local asset and its source record. The 19 tests cover routes, source images, category membership, stable controls, separate news entries, experience deep links, teaser budgets, and deployment configuration. Browser checks additionally cover animation duration, pause/resume, reduced-motion opt-in, explicit failure recovery, and post-presentation scrolling.
+When replacing media, update both the local asset and its source record. The 25 tests cover routes, images, category membership, stable controls, news, experience links, teaser budgets, and deployment configuration. Playback tests execute the component's real client script with controlled media events to verify autoplay, automatic versus user pauses, autoplay denial, and media-error fallback. Browser checks additionally verify desktop scroll switching and autoplay with both reduced and normal motion settings, native pause/resume, and post-presentation scrolling.
 
 ## Publish to GitHub Pages
 

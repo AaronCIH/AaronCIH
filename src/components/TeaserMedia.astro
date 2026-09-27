@@ -9,36 +9,41 @@ const poster = teaser?.poster ?? fallback;
 <div class="teaser-media">
   <div class="teaser-viewport">
     <div data-teaser-poster><ProjectImage image={poster} /></div>
-    {teaser?.video && <video class="teaser-video" data-teaser-video data-src={teaser.video} poster={poster.src.src} width={poster.src.width} height={poster.src.height} aria-label={teaser.caption} muted loop playsinline preload="none" hidden />}
+    {teaser?.video && <video class="teaser-video" data-teaser-video data-src={teaser.video} poster={poster.src.src} width={poster.src.width} height={poster.src.height} aria-label={teaser.caption} controls muted loop playsinline preload="none" hidden />}
   </div>
   {teaser && <p class="teaser-caption">{teaser.caption}</p>}
   {teaser?.video && <p class="teaser-error" data-teaser-error role="status" hidden>The animated preview could not play. The static preview is shown; use the source link or watch the presentation.</p>}
 </div>
 <script>
-  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-teaser-toggle]')];
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const dialog = document.querySelector<HTMLDialogElement>('#video-dialog');
-  let enabled = !reducedMotion.matches;
   const items = [...document.querySelectorAll<HTMLVideoElement>('[data-teaser-video]')].map((video) => {
     const container = video.closest<HTMLElement>('.teaser-media');
     const poster = container?.querySelector<HTMLElement>('[data-teaser-poster]');
     const error = container?.querySelector<HTMLElement>('[data-teaser-error]');
     const src = video.dataset.src;
     if (!container || !poster || !error || !src) throw new Error('Teaser is missing required media markup.');
-    return { video, container, poster, error, src, visible: false, failed: false };
+    return { video, container, poster, error, src, visible: false, failed: false, userPaused: false, autoplayBlocked: false, automaticPauses: 0 };
   });
   type Item = typeof items[number];
-  const shouldPlay = (item: Item) => enabled && item.visible && !item.failed && !document.hidden && !dialog?.open && item.container.getClientRects().length > 0;
+  const canPlay = (item: Item) => item.visible && !document.hidden && !dialog?.open && item.container.getClientRects().length > 0;
+  const pauseAutomatically = (item: Item) => {
+    if (!item.video.paused) {
+      item.automaticPauses++;
+      item.video.pause();
+    }
+  };
   const fail = (item: Item, error: unknown) => {
     item.failed = true;
-    item.video.pause();
+    pauseAutomatically(item);
     item.video.hidden = true;
     item.poster.hidden = false;
+    item.error.textContent = 'The animated preview could not play. The static preview is shown; use the source link or watch the presentation.';
     item.error.hidden = false;
     console.error('Research teaser playback failed:', item.src, error);
   };
   const update = (item: Item) => {
-    if (!shouldPlay(item)) { item.video.pause(); return; }
+    if (!canPlay(item)) { pauseAutomatically(item); return; }
+    if (item.failed || item.userPaused || item.autoplayBlocked) return;
     if (!item.video.getAttribute('src')) item.video.src = item.src;
     item.video.muted = true;
     item.video.hidden = false;
@@ -46,29 +51,18 @@ const poster = teaser?.poster ?? fallback;
     void item.video.play().catch((error: unknown) => {
       // Pausing or changing panels can cancel an in-flight play request.
       if (error instanceof DOMException && error.name === 'AbortError') return;
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        item.autoplayBlocked = true;
+        item.error.textContent = 'Your browser blocked autoplay. Use the video controls to play this preview.';
+        item.error.hidden = false;
+        console.warn('Research teaser autoplay was blocked:', item.src);
+        return;
+      }
       fail(item, error);
     });
   };
-  const updateAll = () => {
-    buttons.forEach((button) => { button.textContent = enabled ? 'Pause animations' : 'Play animations'; });
-    items.forEach(update);
-  };
+  const updateAll = () => items.forEach(update);
   if (items.length) {
-    buttons.forEach((button) => {
-      button.hidden = false;
-      button.addEventListener('click', () => {
-        enabled = !enabled;
-        if (enabled) {
-          items.filter((item) => item.failed).forEach((item) => {
-            item.failed = false;
-            item.error.hidden = true;
-            item.video.removeAttribute('src');
-            item.video.load();
-          });
-        }
-        updateAll();
-      });
-    });
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const item = items.find((candidate) => candidate.container === entry.target);
@@ -78,8 +72,17 @@ const poster = teaser?.poster ?? fallback;
     items.forEach((item) => {
       observer.observe(item.container);
       item.video.addEventListener('error', () => fail(item, item.video.error));
+      item.video.addEventListener('pause', () => {
+        if (item.automaticPauses) item.automaticPauses--;
+        else item.userPaused = true;
+      });
+      item.video.addEventListener('play', () => {
+        item.userPaused = false;
+        item.autoplayBlocked = false;
+        if (!item.failed) item.error.hidden = true;
+        if (!canPlay(item)) pauseAutomatically(item);
+      });
     });
-    reducedMotion.addEventListener('change', () => { enabled = !reducedMotion.matches; updateAll(); });
     document.addEventListener('visibilitychange', updateAll);
     if (dialog) new MutationObserver(updateAll).observe(dialog, { attributes: true, attributeFilter: ['open'] });
     updateAll();

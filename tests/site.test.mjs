@@ -260,6 +260,7 @@ test('teasers start with accessible posters and no unconditional video downloads
   for (const tag of videos) {
     assert.match(tag, /\spreload="none"/);
     assert.match(tag, /\smuted(?:\s|>)/);
+    assert.match(tag, /\scontrols(?:\s|>)/);
     assert.match(tag, /\sloop(?:\s|>)/);
     assert.match(tag, /\splaysinline(?:\s|>)/);
     assert.match(tag, /\shidden(?:\s|>)/);
@@ -269,8 +270,18 @@ test('teasers start with accessible posters and no unconditional video downloads
     assert.ok(src?.startsWith(base));
     assert.ok(existsSync(join(dist, src.slice(base.length))));
   }
-  assert.equal((html.match(/\sdata-teaser-toggle(?:\s|>)/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /data-(?:teaser|motion)-toggle/);
+  assert.match(html, /Previews play silently while visible/);
   assert.equal((html.match(/class="teaser-caption"/g) ?? []).length, 10);
+});
+
+test('desktop scroll switching is independent of reduced-motion preference', () => {
+  const source = readFileSync(join(root, 'src', 'pages', 'publications.astro'), 'utf8');
+  assert.match(source, /matchMedia\('\(min-width: 960px\) and \(min-height: 700px\)'\)/);
+  assert.doesNotMatch(source, /prefers-reduced-motion/);
+  const styles = readFileSync(join(root, 'src', 'styles', 'global.css'), 'utf8');
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /animation: none !important; transition: none !important/);
 });
 
 test('Pages deployment builds and tests before uploading a base-path-safe static site', () => {

@@ -17,7 +17,8 @@ const firstProject = featured[0];
   </section>
   <section class="research-showcase" aria-label="Selected research stories">
     <div class="container">
-      <div class="showcase-heading"><span class="eyebrow">SELECTED RESEARCH STORIES</span><div class="showcase-actions"><button class="teaser-toggle" type="button" data-teaser-toggle aria-controls="showcase" hidden>Play animations</button><span class="mono">SCROLL TO EXPLORE ↓</span></div></div>
+      <div class="showcase-heading"><span class="eyebrow">SELECTED RESEARCH STORIES</span><span class="mono">SCROLL TO EXPLORE ↓</span></div>
+      <p class="preview-guidance">Previews play silently while visible. Use the video controls to pause or resume.</p>
       <div class="showcase-grid" id="showcase">
         <div class="chapters">
           {featured.map((p, i) => (
@@ -38,7 +39,6 @@ const firstProject = featured[0];
         </div>
         <aside class="sticky-stage" aria-label="Current research figure">
           <div class="stage-card">
-            <div class="teaser-toolbar"><button class="teaser-toggle" type="button" data-teaser-toggle aria-controls="showcase" hidden>Play animations</button></div>
             {featured.map((p, i) => (
               <div class="stage-panel" data-panel={i} data-project-title={p.name} data-figure-url={p.image.src.src} data-source-url={p.teaser?.poster.sourcePage ?? p.image.sourcePage} data-video-id={p.video} data-video-url={p.video ? videoUrl(p.video) : undefined} hidden={i !== 0}>
                 <div class="stage-top"><span>{p.name}</span><span>{p.venue} {p.year}</span></div>
@@ -115,7 +115,7 @@ const firstProject = featured[0];
     const figureLink = document.querySelector<HTMLAnchorElement>('[data-stage-figure]');
     const videoLink = document.querySelector<HTMLAnchorElement>('[data-stage-video]');
     const sourceLink = document.querySelector<HTMLAnchorElement>('[data-stage-source]');
-    const media = matchMedia('(min-width: 960px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)');
+    const media = matchMedia('(min-width: 960px) and (min-height: 700px)');
     if (showcase && stage && figureLink && videoLink && sourceLink) {
       let observer: IntersectionObserver | undefined;
       const update = () => {
@@ -144,8 +144,9 @@ const firstProject = featured[0];
       };
       const configure = () => {
         observer?.disconnect();
-        showcase.classList.toggle('scroll-enhanced', media.matches);
-        if (media.matches) {
+        const enhanced = media.matches;
+        showcase.classList.toggle('scroll-enhanced', enhanced);
+        if (enhanced) {
           observer = new IntersectionObserver(update, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
           chapters.forEach((chapter) => observer?.observe(chapter));
           update();

@@ -163,10 +163,7 @@ details[open] > summary svg { transform: rotate(45deg); }
 .research-showcase { background: var(--tint); border-block: 1px solid var(--line); padding-top: 30px; }
 .showcase-heading { border-bottom: 1px solid var(--line); padding-bottom: 24px; display: flex; justify-content: space-between; gap: 15px; color: var(--muted); }
 .showcase-heading .mono { font-size: 9px; }
-.showcase-actions { display: flex; align-items: center; gap: 18px; }
-.teaser-toggle { border: 1px solid #c5d6ee; background: white; color: var(--blue); border-radius: 3px; padding: 6px 11px; min-height: 44px; font-size: 11px; }
-.teaser-toggle:hover { background: var(--pale-blue); }
-.teaser-toolbar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.preview-guidance { padding-block: 14px; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .teaser-viewport { position: relative; height: clamp(210px, 32vh, 320px); }
 .sticky-stage .teaser-viewport { height: clamp(170px, calc(100vh - 530px), 320px); }
 .teaser-viewport > [data-teaser-poster], .teaser-viewport .project-image-stage { height: 100%; }
@@ -451,7 +448,6 @@ dialog::backdrop { background: #071b3cd9; backdrop-filter: blur(7px); }
   .research-showcase { padding-top: 24px; }
   .showcase-heading { flex-direction: column; gap: 8px; padding-bottom: 21px; }
   .showcase-heading .mono { font-size: 8px; }
-  .showcase-actions { flex-wrap: wrap; gap: 12px; }
   .teaser-viewport { height: 250px; }
   .chapters { display: block; }
   .research-chapter { padding-block: 36px; scroll-margin-top: 85px; }
