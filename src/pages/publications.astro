@@ -1,0 +1,158 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import ProjectImage from '../components/ProjectImage.astro';
+import ResourceLinks from '../components/ResourceLinks.astro';
+import ResearchTopics from '../components/ResearchTopics.astro';
+import TeaserMedia from '../components/TeaserMedia.astro';
+import { featured, publications, videoUrl } from '../data/research';
+const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a);
+const topics = [...new Set(publications.flatMap((p) => p.topics))].sort();
+const firstProject = featured[0];
+---
+<Layout title="Publications" active="Publications" description="Selected research by I-Hsiang (Aaron) Chen in image generation and editing, multimodal learning, domain generalization, and visual understanding.">
+  <section class="page-heading container">
+    <p class="eyebrow">RESEARCH / 2021 — 2026</p>
+    <div class="page-heading-row"><h1>Research with<br /><em>a clearer vision.</em></h1><div><p>Restoring the details. Understanding the whole.<br />Explore the ideas, methods, and results behind my work.</p><a class="text-link" href="#all-publications">Jump to all {publications.length} publications <Icon /></a></div></div>
+  </section>
+  <section class="research-showcase" aria-label="Selected research stories">
+    <div class="container">
+      <div class="showcase-heading"><span class="eyebrow">SELECTED RESEARCH STORIES</span><div class="showcase-actions"><button class="teaser-toggle" type="button" data-teaser-toggle aria-controls="showcase" hidden>Play animations</button><span class="mono">SCROLL TO EXPLORE ↓</span></div></div>
+      <div class="showcase-grid" id="showcase">
+        <div class="chapters">
+          {featured.map((p, i) => (
+            <article class="research-chapter" id={p.id} data-chapter={i}>
+              <div class="chapter-meta"><span class="mono">0{i + 1} / 0{featured.length}</span><span>{p.venue} {p.year}{p.highlight && ` / ${p.highlight}`}</span></div>
+              <ResearchTopics topics={p.topics} />
+              <h2>{p.name}</h2>
+              <h3>{p.feature.headline}</h3>
+              <p class="chapter-summary">{p.feature.summary}</p>
+              <details class="research-detail"><summary>Inside the research <Icon name="plus" size={16} /></summary><div><h4>The approach</h4><p>{p.feature.approach}</p><h4>Why it matters</h4><p>{p.feature.impact}</p><h4>Full paper title</h4><p>{p.title}</p></div></details>
+              <ResourceLinks publication={p} />
+              <figure class="inline-media project-media">
+                <TeaserMedia teaser={p.teaser} fallback={p.image} />
+                <figcaption class="media-caption">Research preview · <a href={p.teaser?.poster.sourcePage ?? p.image.sourcePage} target="_blank" rel="noopener noreferrer">Source</a> · <a href={p.image.src.src} target="_blank" rel="noopener noreferrer">View full figure</a></figcaption>
+              </figure>
+            </article>
+          ))}
+        </div>
+        <aside class="sticky-stage" aria-label="Current research figure">
+          <div class="stage-card">
+            <div class="teaser-toolbar"><button class="teaser-toggle" type="button" data-teaser-toggle aria-controls="showcase" hidden>Play animations</button></div>
+            {featured.map((p, i) => (
+              <div class="stage-panel" data-panel={i} data-project-title={p.name} data-figure-url={p.image.src.src} data-source-url={p.teaser?.poster.sourcePage ?? p.image.sourcePage} data-video-id={p.video} data-video-url={p.video ? videoUrl(p.video) : undefined} hidden={i !== 0}>
+                <div class="stage-top"><span>{p.name}</span><span>{p.venue} {p.year}</span></div>
+                <TeaserMedia teaser={p.teaser} fallback={p.image} />
+              </div>
+            ))}
+            <!-- Keep controls mounted while figures change so video focus restoration cannot lock scrolling. -->
+            <div class="stage-bottom">
+              <a class="text-link" data-stage-figure href={firstProject.image.src.src} target="_blank" rel="noopener noreferrer">View full figure <Icon name="external" size={15} /></a>
+              <a class="stage-play" data-stage-video href={firstProject.video ? videoUrl(firstProject.video) : undefined} data-video={firstProject.video ?? ''} data-video-title={firstProject.name} hidden={!firstProject.video} target="_blank" rel="noopener noreferrer"><Icon name="play" size={17} /> Watch video</a>
+            </div>
+            <span class="media-caption">Research preview · <a data-stage-source href={firstProject.teaser?.poster.sourcePage ?? firstProject.image.sourcePage} target="_blank" rel="noopener noreferrer">Source</a></span>
+          </div>
+          <nav class="chapter-nav" aria-label="Jump to selected research">{featured.map((p, i) => <a href={`#${p.id}`} data-chapter-link={i} aria-label={`0${i + 1} / Go to ${p.name}`} aria-current={i === 0 ? 'step' : undefined}>0{i + 1}</a>)}</nav>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <section class="section container publications-section" id="all-publications">
+    <div class="section-heading"><div><p class="eyebrow">THE RESEARCH INDEX</p><h2>All <em>publications.</em></h2></div><span class="index-count mono">{publications.length} PAPERS / 2021–2026</span></div>
+    <form class="publication-filters" hidden>
+      <label>Year<select name="year" id="filter-year"><option value="all">All years</option>{years.map((year) => <option value={year}>{year}</option>)}</select></label>
+      <label>Research area<select name="topic" id="filter-topic"><option value="all">All research areas</option>{topics.map((topic) => <option value={topic}>{topic}</option>)}</select></label>
+      <button type="reset" class="text-link">Reset filters <Icon name="close" size={14} /></button>
+      <span id="filter-count" role="status" aria-live="polite">{publications.length} publications</span>
+    </form>
+    <div class="publication-list">
+      {publications.map((p) => (
+        <article class="publication-row" data-publication data-publication-id={p.id} data-year={p.year}>
+          <a class="publication-thumbnail" href={p.paper} target="_blank" rel="noopener noreferrer" aria-label={`Read ${p.name}`}><ProjectImage image={p.image} variant="index" /></a>
+          <div>
+            <div class="publication-meta"><span class="venue">{p.venue} {p.year}</span>{p.highlight && <span class="highlight">✳ {p.highlight}</span>}</div>
+            <h3>{p.title}</h3>
+            <p class="author-line"><strong>I-Hsiang Chen</strong> and collaborators <span>· {p.role}</span></p>
+            <ResearchTopics topics={p.topics} compact />
+            <ResourceLinks publication={p} compact />
+          </div>
+          <a class="paper-arrow" href={p.paper} target="_blank" rel="noopener noreferrer" aria-label={`Read ${p.name}`}><Icon name="external" size={24} /></a>
+        </article>
+      ))}
+    </div>
+    <div class="empty-state" id="no-publications" hidden><h3>No publications in this combination.</h3><p>Try another year or research area, or reset the filters.</p><button class="button primary" type="button" data-reset-filters>Show all publications <Icon /></button></div>
+    <p class="content-note">Bibliography preview: author lists are abbreviated. Refer to the linked papers for complete citations; final metadata review is pending.</p>
+  </section>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('.publication-filters');
+    const year = document.querySelector<HTMLSelectElement>('#filter-year');
+    const topic = document.querySelector<HTMLSelectElement>('#filter-topic');
+    const count = document.querySelector<HTMLElement>('#filter-count');
+    const empty = document.querySelector<HTMLElement>('#no-publications');
+    const papers = [...document.querySelectorAll<HTMLElement>('[data-publication]')];
+    if (form && year && topic && count && empty) {
+      form.hidden = false;
+      const filter = () => {
+        let visible = 0;
+        papers.forEach((paper) => {
+          const matchesTopic = topic.value === 'all' || [...paper.querySelectorAll<HTMLElement>('[data-topic]')].some((tag) => tag.dataset.topic === topic.value);
+          paper.hidden = !(year.value === 'all' || paper.dataset.year === year.value) || !matchesTopic;
+          if (!paper.hidden) visible++;
+        });
+        count.textContent = `${visible} ${visible === 1 ? 'publication' : 'publications'}`;
+        empty.hidden = visible !== 0;
+      };
+      form.addEventListener('change', filter);
+      form.addEventListener('submit', (event) => event.preventDefault());
+      form.addEventListener('reset', () => { requestAnimationFrame(filter); });
+      document.querySelector('[data-reset-filters]')?.addEventListener('click', () => { form.reset(); year.focus(); });
+    }
+    const showcase = document.querySelector<HTMLElement>('#showcase');
+    const chapters = [...document.querySelectorAll<HTMLElement>('[data-chapter]')];
+    const panels = [...document.querySelectorAll<HTMLElement>('[data-panel]')];
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-chapter-link]')];
+    const stage = document.querySelector<HTMLElement>('.sticky-stage');
+    const figureLink = document.querySelector<HTMLAnchorElement>('[data-stage-figure]');
+    const videoLink = document.querySelector<HTMLAnchorElement>('[data-stage-video]');
+    const sourceLink = document.querySelector<HTMLAnchorElement>('[data-stage-source]');
+    const media = matchMedia('(min-width: 960px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)');
+    if (showcase && stage && figureLink && videoLink && sourceLink) {
+      let observer: IntersectionObserver | undefined;
+      const update = () => {
+        const center = innerHeight * .5;
+        const nearest = chapters.reduce((best, chapter, i) => {
+          const rect = chapter.getBoundingClientRect();
+          const distance = center < rect.top ? rect.top - center : center > rect.bottom ? center - rect.bottom : 0;
+          return distance < best.distance ? { index: i, distance } : best;
+        }, { index: 0, distance: Infinity }).index;
+        const { figureUrl, sourceUrl, projectTitle, videoId, videoUrl } = panels[nearest].dataset;
+        if (!figureUrl || !sourceUrl || !projectTitle || (videoId && !videoUrl)) {
+          throw new Error('Selected research panel is missing resource metadata.');
+        }
+        figureLink.href = figureUrl;
+        sourceLink.href = sourceUrl;
+        videoLink.hidden = !videoId;
+        videoLink.dataset.video = videoId ?? '';
+        videoLink.dataset.videoTitle = projectTitle;
+        if (videoId && videoUrl) videoLink.href = videoUrl;
+        else videoLink.removeAttribute('href');
+        panels.forEach((panel, i) => { panel.hidden = i !== nearest; });
+        const activeImage = panels[nearest]?.querySelector('img');
+        if (activeImage) activeImage.loading = 'eager';
+        chapters.forEach((chapter, i) => chapter.classList.toggle('is-active', i === nearest));
+        links.forEach((link, i) => { if (i === nearest) link.setAttribute('aria-current', 'step'); else link.removeAttribute('aria-current'); });
+      };
+      const configure = () => {
+        observer?.disconnect();
+        showcase.classList.toggle('scroll-enhanced', media.matches);
+        if (media.matches) {
+          observer = new IntersectionObserver(update, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+          chapters.forEach((chapter) => observer?.observe(chapter));
+          update();
+        }
+      };
+      media.addEventListener('change', configure);
+      configure();
+    }
+  </script>
+</Layout>

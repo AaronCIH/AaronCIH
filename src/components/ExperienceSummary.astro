@@ -1,0 +1,21 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { experience } from '../data/profile';
+import { sitePath } from '../utils/paths';
+---
+<ul class="experience-summary" aria-label="Professional journey summary" tabindex="0">
+  {experience.map((item) => (
+    <li>
+      <a class="experience-summary-card" href={sitePath(`experience/#${item.id}`)}>
+        <Image src={item.image.src} alt={item.image.alt} class="summary-logo" width={280} format="webp" loading="lazy" decoding="async" />
+        <span class="summary-period">{item.period}</span>
+        <h3>{item.company}</h3>
+        <p>{item.role}</p>
+        <span class="summary-topic">{item.topic}</span>
+        <span class="summary-more">View experience <Icon name="external" size={13} /></span>
+      </a>
+    </li>
+  ))}
+</ul>
+<p class="journey-scroll-hint">Scroll horizontally to explore the full journey.</p>

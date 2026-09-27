@@ -1,0 +1,8 @@
+---
+import type { Topic } from '../data/research';
+interface Props { topics: readonly Topic[]; compact?: boolean }
+const { topics, compact = false } = Astro.props;
+---
+<div class:list={['research-topics', { compact }]} aria-label="Research areas">
+  {topics.map((topic) => <span class="research-tag" data-topic={topic}>{topic}</span>)}
+</div>

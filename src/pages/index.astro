@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import ProjectImage from '../components/ProjectImage.astro';
+import ExperienceSummary from '../components/ExperienceSummary.astro';
+import ResourceLinks from '../components/ResourceLinks.astro';
+import ResearchTopics from '../components/ResearchTopics.astro';
+import { homeResearch } from '../data/research';
+import { portraitImage } from '../data/media';
+import { profile, news, honors } from '../data/profile';
+import { sitePath } from '../utils/paths';
+---
+<Layout title="Home" active="Home">
+  <section class="hero-section">
+    <div class="hero container">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot"></span> I-HSIANG (AARON) CHEN</p>
+        <h1>Bridging vision,<br />generation, and<br /><em>the real world.</em></h1>
+        <p class="hero-intro">{profile.bio}</p>
+        <div class="hero-actions">
+          <a class="button primary" href={sitePath('publications/')}>Explore my research <Icon size={18} /></a>
+          <a class="text-link" href={sitePath('cv/')}>View CV <Icon name="external" size={16} /></a>
+        </div>
+        <div class="hero-topics"><span>Computer vision</span><span>Generative AI</span><span>Multimodal learning</span></div>
+      </div>
+      <figure class="portrait-figure">
+        <div class="portrait-frame"><Image src={portraitImage.src} alt={portraitImage.alt} width={450} widths={[320, 450]} sizes="(max-width: 700px) 80vw, 390px" format="webp" quality={90} loading="eager" fetchpriority="high" /></div>
+        <figcaption><strong>I-Hsiang (Aaron) Chen</strong><span>Perception. Generation. Understanding.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+  <div class="affiliation-strip container">
+    <span class="eyebrow">RESEARCH ACROSS ACADEMIA & INDUSTRY</span>
+    <div><span>National Taiwan University</span><span>University of Washington</span><span>Samsung Research</span><span>MediaTek</span><span>ASML</span></div>
+  </div>
+
+  <section class="section container journey-section" aria-labelledby="journey-title">
+    <div class="section-heading journey-heading">
+      <div><p class="eyebrow">EXPERIENCE</p><h2 id="journey-title">A professional <em>journey.</em></h2></div>
+      <a class="text-link" href={sitePath('experience/')}>All experience <Icon /></a>
+    </div>
+    <p class="section-lead">{profile.background}</p>
+    <ExperienceSummary />
+  </section>
+
+  <section class="research-band" aria-labelledby="selected-title">
+    <div class="container">
+      <div class="section-heading">
+        <div><p class="eyebrow">SELECTED RESEARCH</p><h2 id="selected-title">From questions to <em>contributions.</em></h2></div>
+        <a class="text-link" href={sitePath('publications/')}>All publications <Icon /></a>
+      </div>
+      <div class="research-cards">
+        {homeResearch.map((p) => (
+          <article class="research-card">
+            <a class="card-art" href={sitePath(`publications/#${p.id}`)} aria-label={`Explore ${p.name}`}>
+              <ProjectImage image={p.image} variant="card" />
+              <span class="art-open"><Icon name="external" size={18} /></span>
+            </a>
+            <div class="research-card-body">
+              <div class="card-meta"><span>{p.venue} {p.year}</span>{p.highlight && <span class="highlight">✳ {p.highlight}</span>}</div>
+              <h3><a href={sitePath(`publications/#${p.id}`)}>{p.name}</a></h3>
+              <p>{p.feature.headline}</p>
+              <ResearchTopics topics={p.topics} compact />
+              <ResourceLinks publication={p} compact />
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section container news-grid" aria-labelledby="news-title">
+    <div class="news-heading"><p class="eyebrow">LATEST UPDATES</p><h2 id="news-title">What's <em>new.</em></h2><p class="section-description">Research updates, new experiences,<br />and milestones along the way.</p></div>
+    <div>
+      <div class="news-list">{news.slice(0, 5).map((item) => <a class="news-item" href={sitePath(item.href)}><span class="news-date">{item.date}</span><span><span class="news-tag">{item.tag}</span><span class="news-text">{item.text}</span></span><Icon name="external" size={18} /></a>)}</div>
+      <details class="news-archive"><summary>Earlier updates <Icon name="plus" size={16} /></summary><div class="news-list">{news.slice(5).map((item) => <a class="news-item" href={sitePath(item.href)}><span class="news-date">{item.date}</span><span><span class="news-tag">{item.tag}</span><span class="news-text">{item.text}</span></span><Icon name="external" size={18} /></a>)}</div></details>
+    </div>
+  </section>
+  <section class="container home-summary">
+    <div class="summary-intro"><p class="eyebrow">RECOGNITION</p><h2>Milestones<br /><em>along the way.</em></h2></div>
+    {honors.slice(0, 2).map((award) => <a class="summary-card" href={sitePath('awards/')}><span class="date-pill">{award.year}</span><h3>{award.title}</h3><p>{award.organization}</p><span class="text-link">Explore awards <Icon name="external" size={16} /></span></a>)}
+  </section>
+</Layout>

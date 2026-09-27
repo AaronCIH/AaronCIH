@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import { experience } from '../data/profile';
+interface Props { items?: typeof experience }
+const { items = experience } = Astro.props;
+---
+<div class="journey-timeline">
+  {items.map((item) => (
+    <article class="journey-row" id={item.id}>
+      <div class="journey-media">
+        <Image src={item.image.src} alt={item.image.alt} class="journey-logo" width={Math.min(item.image.src.width, 400)} format="webp" quality={90} loading="lazy" decoding="async" />
+        <span>{item.topic}</span>
+      </div>
+      <div class="journey-content">
+        <span class="date-pill">{item.period}</span>
+        <h3>{item.role}</h3>
+        <p class="journey-company">{item.company} <span>· {item.location}</span></p>
+        <p class="journey-description">{item.description}</p>
+      </div>
+    </article>
+  ))}
+</div>

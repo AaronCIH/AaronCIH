@@ -1,0 +1,44 @@
+{
+  "retrieved": "2026-09-26",
+  "conversion": "GIFs converted to silent H.264 MP4 at 15 fps, maximum width 960 px, CRF 24, yuv420p, fast-start. Full animation duration is retained; posters use representative frames.",
+  "sources": [
+    {
+      "id": "rar",
+      "durationSeconds": 39.866667,
+      "posterAtSeconds": 35,
+      "url": "https://raw.githubusercontent.com/saic-fi/RAR/main/assets/teaser.gif",
+      "page": "https://github.com/saic-fi/RAR/blob/main/assets/teaser.gif",
+      "animated": true
+    },
+    {
+      "id": "unirestore",
+      "durationSeconds": 16.133333,
+      "posterAtSeconds": 4,
+      "url": "https://raw.githubusercontent.com/unirestore/UniRestore/main/assets/teaser.gif",
+      "page": "https://github.com/unirestore/UniRestore/blob/main/assets/teaser.gif",
+      "animated": true
+    },
+    {
+      "id": "pdaf",
+      "durationSeconds": 9,
+      "posterAtSeconds": 5,
+      "url": "https://pdaf-iccv.github.io/pdaf_files/Qualitative/7ec0c9b1-00000000/8.gif",
+      "page": "https://pdaf-iccv.github.io/",
+      "animated": true
+    },
+    {
+      "id": "apgcc",
+      "durationSeconds": 9,
+      "posterAtSeconds": 0,
+      "url": "https://apgcc.github.io/apgcc_file/vis/output_gt_1.gif",
+      "page": "https://apgcc.github.io/",
+      "animated": true
+    },
+    {
+      "id": "robustvisrag",
+      "url": "https://robustvisrag.github.io/robustvisrag_files/ret/ret_sample2_.png",
+      "page": "https://robustvisrag.github.io/",
+      "animated": false
+    }
+  ]
+}

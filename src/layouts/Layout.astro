@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import VideoDialog from '../components/VideoDialog.astro';
+import { profile } from '../data/profile';
+import { sitePath } from '../utils/paths';
+interface Props { title: string; description?: string; active: string }
+const { title, description = profile.bio, active } = Astro.props;
+const navigation = [{name: 'Home', path: ''}, {name: 'Publications', path: 'publications/'}, {name: 'Experience', path: 'experience/'}, {name: 'Awards', path: 'awards/'}, {name: 'CV', path: 'cv/'}];
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href={sitePath('favicon.svg')} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={`${title} — Aaron Chen`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(sitePath('social.png'), Astro.site)} />
+    <title>{title} — Aaron Chen</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="brand" href={sitePath()}>Aaron Chen<span class="brand-dot">.</span></a>
+        <button class="menu-toggle" type="button" aria-controls="primary-nav" aria-expanded="false" hidden>Menu <Icon name="plus" size={18} /></button>
+        <nav id="primary-nav" aria-label="Main navigation">
+          {navigation.map(({name, path}) => <a href={sitePath(path)} aria-current={active === name ? 'page' : undefined}>{name}</a>)}
+        </nav>
+        <a class="contact-link" href={`mailto:${profile.email}`}>Let's talk <Icon name="external" size={16} /></a>
+      </div>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer">
+      <div class="container footer-main">
+        <div><span class="eyebrow">LET'S CONNECT</span><h2>Good research starts<br />with a <em>conversation.</em></h2></div>
+        <a class="button footer-contact" href={`mailto:${profile.email}`}>Get in touch <Icon name="external" size={20} /></a>
+      </div>
+      <div class="container footer-bottom">
+        <a class="brand footer-brand" href={sitePath()}>I-Hsiang (Aaron) Chen<span class="brand-dot">.</span></a>
+        <div class="footer-social"><a href={`mailto:${profile.email}`}>Email <Icon name="external" size={13} /></a><a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub <Icon name="external" size={13} /></a><a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <Icon name="external" size={13} /></a></div>
+        <a class="back-top" href="#main">Back to top ↑</a>
+      </div>
+      <div class="container preview-note"><span>PROFILE PREVIEW · Profile and bibliography details pending final review.</span><span>Made with curiosity. © {new Date().getFullYear()}</span></div>
+    </footer>
+    <VideoDialog />
+    <script>
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+      const nav = document.querySelector<HTMLElement>('#primary-nav');
+      if (toggle && nav) {
+        toggle.hidden = false;
+        document.documentElement.classList.add('nav-enhanced');
+        const setOpen = (open: boolean) => {
+          toggle.setAttribute('aria-expanded', String(open));
+          nav.classList.toggle('is-open', open);
+        };
+        toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') { setOpen(false); toggle.focus(); }
+        });
+        document.addEventListener('click', (event) => {
+          if (event.target instanceof Node && !nav.contains(event.target) && !toggle.contains(event.target)) setOpen(false);
+        });
+        nav.addEventListener('focusout', (event) => {
+          if (event.relatedTarget instanceof Node && !nav.contains(event.relatedTarget) && event.relatedTarget !== toggle) setOpen(false);
+        });
+      }
+    </script>
+  </body>
+</html>

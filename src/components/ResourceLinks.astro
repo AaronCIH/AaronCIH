@@ -1,0 +1,13 @@
+---
+import Icon from './Icon.astro';
+import { videoUrl, type Publication } from '../data/research';
+interface Props { publication: Publication; compact?: boolean }
+const { publication: p, compact = false } = Astro.props;
+---
+<div class:list={['resource-links', { compact }]}>
+  <a href={p.paper} target="_blank" rel="noopener noreferrer">Paper <Icon name="external" size={14} /></a>
+  {p.project && <a href={p.project} target="_blank" rel="noopener noreferrer">Project <Icon name="external" size={14} /></a>}
+  {p.code && <a href={p.code} target="_blank" rel="noopener noreferrer">Code <Icon name="external" size={14} /></a>}
+  {p.demo && <a href={p.demo} target="_blank" rel="noopener noreferrer">Live demo <Icon name="external" size={14} /></a>}
+  {p.video && <a href={videoUrl(p.video)} data-video={p.video} data-video-title={p.name} target="_blank" rel="noopener noreferrer"><Icon name="play" size={14} /> Watch video</a>}
+</div>

@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { honors, competitions } from '../data/profile';
+---
+<Layout title="Awards" active="Awards">
+  <section class="page-heading container"><p class="eyebrow">HONORS / SCHOLARSHIPS / COMPETITIONS</p><div class="page-heading-row"><h1>Small steps.<br /><em>Meaningful moments.</em></h1><div><p>Recognition along the way.<br />A reminder to keep asking, building, and learning.</p></div></div></section>
+  <section class="container award-feature">
+    <div class="award-emblem" aria-hidden="true">
+      <svg viewBox="0 0 200 200" fill="none">
+        <circle cx="100" cy="100" r="78" stroke="currentColor" stroke-width=".5"/>
+        <circle cx="100" cy="100" r="67" stroke="currentColor" stroke-dasharray="1 5"/>
+        {Array.from({length: 12}, (_, i) => <path d="M100 38 107 81 139 61 119 93 162 100 119 107 139 139 107 119 100 162 93 119 61 139 81 107 38 100 81 93 61 61 93 81Z" transform={`rotate(${i * 5} 100 100)`} stroke="currentColor" stroke-width=".45" opacity=".55" />)}
+        <circle cx="100" cy="100" r="9" fill="currentColor"/>
+      </svg>
+    </div>
+    <div><p class="eyebrow">SELECTED RECOGNITION / 2025</p><h2>{honors[0].title}</h2><p>{honors[0].description}</p><span>National Taiwan University</span></div>
+  </section>
+  <section class="section container"><div class="section-heading"><div><p class="eyebrow">01 / RECOGNITION</p><h2>Honors & <em>scholarships.</em></h2></div></div><div class="award-list">{honors.map((award) => <article class="award-row"><span class="mono">{award.year}</span><div><h3>{award.title}</h3><p>{award.organization}</p></div><p>{award.description}</p><span class="award-spark" aria-hidden="true">✳</span></article>)}</div></section>
+  <section class="competition-section"><div class="container"><div class="section-heading"><div><p class="eyebrow">02 / BUILDING & COMPETING</p><h2>Ideas put to <em>the test.</em></h2></div></div><div class="competition-grid">{competitions.map((award) => <article class="competition-card"><div><span class="mono">{award.year}</span><span class="result-badge">{award.result}</span></div><h3>{award.title}</h3><span class="competition-org">{award.organization}</span><p>{award.description}</p></article>)}</div><p class="content-note">Award names and dates are drawn from the previous website. Final source review is pending; conflicting months have been omitted.</p></div></section>
+</Layout>

@@ -1,0 +1,69 @@
+---
+import Icon from './Icon.astro';
+---
+<dialog id="video-dialog" aria-labelledby="video-title">
+  <div class="video-dialog-header">
+    <div><span class="eyebrow">RESEARCH PRESENTATION</span><h2 id="video-title">Project video</h2></div>
+    <button type="button" class="icon-button" data-video-close aria-label="Close video"><Icon name="close" /></button>
+  </div>
+  <div class="video-frame" id="video-frame"></div>
+  <div class="video-dialog-footer">
+    <p id="video-status" role="status">Loading YouTube player...</p>
+    <a id="video-external" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">Open on YouTube <Icon name="external" size={16} /></a>
+  </div>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#video-dialog');
+  const frame = document.querySelector<HTMLElement>('#video-frame');
+  const title = document.querySelector<HTMLElement>('#video-title');
+  const status = document.querySelector<HTMLElement>('#video-status');
+  const external = document.querySelector<HTMLAnchorElement>('#video-external');
+  if (dialog && frame && title && status && external) {
+    let trigger: HTMLAnchorElement | null = null;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    document.querySelectorAll<HTMLAnchorElement>('a[data-video]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        const id = link.dataset.video;
+        if (!id || !/^[\w-]{11}$/.test(id)) {
+          console.error('Invalid research video identifier', id);
+          return;
+        }
+        event.preventDefault();
+        trigger = link;
+        title.textContent = link.dataset.videoTitle ?? 'Research presentation';
+        external.href = link.href;
+        status.textContent = 'Loading YouTube player...';
+        const iframe = document.createElement('iframe');
+        iframe.title = `${title.textContent} - YouTube presentation`;
+        iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        const fallback = () => { status.textContent = 'Player unavailable or restricted? Open the presentation on YouTube.'; };
+        iframe.addEventListener('load', () => {
+          clearTimeout(timeout);
+          status.textContent = 'Playback is provided by YouTube. If it cannot play here, use the link alongside.';
+        });
+        iframe.addEventListener('error', fallback);
+        timeout = setTimeout(fallback, 10000);
+        frame.replaceChildren(iframe);
+        dialog.showModal();
+        document.documentElement.classList.add('dialog-open');
+      });
+    });
+    const close = () => dialog.close();
+    dialog.querySelector('[data-video-close]')?.addEventListener('click', close);
+    dialog.addEventListener('cancel', (event) => { event.preventDefault(); close(); });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') { event.preventDefault(); close(); }
+    });
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) close(); });
+    dialog.addEventListener('close', () => {
+      clearTimeout(timeout);
+      frame.replaceChildren();
+      document.documentElement.classList.remove('dialog-open');
+      trigger?.focus({ preventScroll: true });
+    });
+  }
+</script>

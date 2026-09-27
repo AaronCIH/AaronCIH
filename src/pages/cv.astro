@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { profile, experience, education, honors } from '../data/profile';
+import { publications } from '../data/research';
+import { sitePath } from '../utils/paths';
+---
+<Layout title="Curriculum Vitae" active="CV">
+  <section class="page-heading container cv-heading"><p class="eyebrow">THE SHORT VERSION</p><div class="page-heading-row"><h1>Curriculum<br /><em>vitae.</em></h1><div><p>Research, experience, and a few milestones.<br />An accessible, print-friendly overview.</p><button type="button" class="button primary" id="print-cv" hidden>Print / Save as PDF <Icon name="external" size={16} /></button></div></div></section>
+  <div class="container cv-layout">
+    <aside class="cv-sidebar"><p class="eyebrow">ON THIS PAGE</p><nav aria-label="CV sections"><a href="#cv-profile">Profile</a><a href="#cv-education">Education</a><a href="#cv-experience">Experience</a><a href="#cv-publications">Publications</a><a href="#cv-awards">Recognition</a></nav><div class="cv-note"><Icon name="plus" size={20} /><p>The official CV PDF has not been supplied yet. You can print this web preview; it is not a finalized CV.</p><a href={profile.originalSite.replace('/home', '/cv')} target="_blank" rel="noopener noreferrer">Previous CV page <Icon name="external" size={14} /></a></div></aside>
+    <article class="cv-paper">
+      <header id="cv-profile"><p class="eyebrow">CURRICULUM VITAE / WEB PREVIEW</p><h2>{profile.name}</h2><p class="cv-specialty">Computer Vision · Generative Models · Multimodal Learning</p><a href={`mailto:${profile.email}`}>{profile.email}</a><p class="cv-bio">{profile.bio}</p></header>
+      <section id="cv-education"><h3>Education & visiting research</h3>{education.map((item) => <div class="cv-entry"><div><h4>{item.school}</h4><span>{item.period}</span></div><p>{item.study}</p><p class="muted">{item.detail}</p></div>)}</section>
+      <section id="cv-experience"><h3>Research & industry experience</h3>{experience.map((item) => <div class="cv-entry"><div><h4>{item.company}</h4><span>{item.period}</span></div><p>{item.role} / {item.location}</p><p class="muted">{item.description}</p></div>)}</section>
+      <section id="cv-publications"><h3>Selected publications</h3>{publications.slice(0, 5).map((p) => <div class="cv-entry"><div><h4><a href={p.paper} target="_blank" rel="noopener noreferrer">{p.title}</a></h4><span>{p.year}</span></div><p>{p.venue}{p.highlight && ` ${p.highlight}`} · I-Hsiang Chen and collaborators · {p.role}</p></div>)}<a class="text-link" href={sitePath('publications/#all-publications')}>Complete research index <Icon size={16} /></a></section>
+      <section id="cv-awards"><h3>Selected recognition</h3>{honors.slice(0, 5).map((item) => <div class="cv-entry"><div><h4>{item.title}</h4><span>{item.year}</span></div><p>{item.organization}</p></div>)}</section>
+      <p class="cv-disclaimer">Web preview prepared September 2026 from the previous personal website. Current status, degree dates, and full bibliography require review before publication.</p>
+    </article>
+  </div>
+  <script>
+    const print = document.querySelector<HTMLButtonElement>('#print-cv');
+    if (print) { print.hidden = false; print.addEventListener('click', () => window.print()); }
+  </script>
+</Layout>
