@@ -167,7 +167,7 @@ export const publications: Publication[] = [
 export const featured = publications.filter(
   (publication): publication is Publication & { feature: NonNullable<Publication['feature']> } => Boolean(publication.feature),
 );
-const homeOrder = ['unirestore', 'pdaf', 'apgcc', 'restore-assess-repeat', 'robustvisrag'];
+const homeOrder = ['restore-assess-repeat', 'robustvisrag', 'unirestore', 'pdaf', 'apgcc'];
 export const homeResearch = homeOrder.map((id) => {
   const publication = featured.find((item) => item.id === id);
   if (!publication) throw new Error(`Home research project is missing: ${id}`);

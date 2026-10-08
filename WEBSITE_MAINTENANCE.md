@@ -34,7 +34,7 @@ The tests inspect the built output, so run the build before `npm test`. Tests us
 - A portrait-led homepage with larger research-focus labels and five experience cards in a horizontal row. Smaller screens can scroll the card strip without scrolling the whole page sideways.
 - The Experience page keeps every logo on the left and its corresponding text on the right; mobile rows stack logo above text.
 - Separate April 2026 CVPR acceptance news for RAR and RobustVisRAG, each linked to its own project.
-- Home's selected-research carousel contains UniRestore, PDAF, APGCC, RAR, and RobustVisRAG, in that order. Desktop shows three cards, tablet two, and mobile one; each arrow click advances exactly one card, with boundary states and a visible range indicator.
+- Home's selected-research carousel contains Restore. Assess. Repeat. (RAR), RobustVisRAG, UniRestore, PDAF, and APGCC, in that order. Desktop shows three cards, tablet two, and mobile one; each arrow click advances exactly one card, with boundary states and a visible range indicator. Update `homeOrder` in [research.ts](src/data/research.ts) to change this ordering.
 - Home thumbnails reuse the Publications teasers, including the RobustVisRAG Retrieve / Generation pair. Videos autoplay only while visible and pause when horizontally scrolled out of view.
 - Five selected research stories with capability teasers on the left and explanations on the right.
 - Linear illustrated stories on mobile, short screens, or without JavaScript. Desktop scroll switching remains available when the device requests reduced motion; CSS transitions and smooth scrolling are disabled for that preference.

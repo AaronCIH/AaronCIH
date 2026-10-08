@@ -190,24 +190,24 @@ test('home research cards show the same multiple categories as the publication i
   const cards = [...pages.get('').matchAll(/<article class="research-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]);
   const tags = cards.map(card => [...card.matchAll(/\sdata-topic="([^"]+)"/g)].map(match => match[1]));
   assert.deepEqual(tags, [
+    ['Image Generation and Editing', 'Multimodal Learning'],
+    ['Multimodal Learning', 'Visual Understanding'],
     ['Image Generation and Editing', 'Multimodal Learning', 'Visual Understanding'],
     ['Domain Generalization', 'Visual Understanding'],
     ['Visual Understanding'],
-    ['Image Generation and Editing', 'Multimodal Learning'],
-    ['Multimodal Learning', 'Visual Understanding'],
   ]);
 });
 
-test('Home carousel contains all five projects in the preserved order with shared teaser media', () => {
+test('Home carousel presents the requested project order with matching teaser media', () => {
   const home = pages.get('');
   const cards = [...home.matchAll(/<article class="research-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]);
   assert.deepEqual(cards.map(card => card.match(/data-project-id="([^"]+)"/)[1]), [
-    'unirestore', 'pdaf', 'apgcc', 'restore-assess-repeat', 'robustvisrag',
+    'restore-assess-repeat', 'robustvisrag', 'unirestore', 'pdaf', 'apgcc',
   ]);
   for (const [index, card] of cards.entries()) {
     assert.ok(card.includes(`aria-label="${index + 1} of 5:`));
     assert.match(card, /class="teaser-media"/);
-    if (index < 4) {
+    if (!card.includes('data-project-id="robustvisrag"')) {
       assert.match(card, /<video\b[^>]*controls muted loop playsinline preload="none" hidden/);
       assert.doesNotMatch(card, /<a\b[^>]*>[^<]*<video/);
     } else {
